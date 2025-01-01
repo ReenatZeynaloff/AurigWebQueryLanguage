@@ -1,0 +1,33 @@
+create myDataBase as database
+
+read myDataBase as myDB
+
+read * in myDB
+
+
+create in myDB connection myConn ( \
+    protocol = "http" \
+    host = "127.0.0.1" \
+    port = "8000" \
+)
+
+
+read request == "post" with formid == 1 in myConn as newResources
+
+
+create in myDB table users ( \
+    name = string \
+    surname = string \
+    age = integer \
+    isANewbie = boolean \
+)
+
+
+if a > 5 and b == 2 :
+    insert in users response ( newResources )
+end
+
+if not a :
+    delete (1<=>2) from users in myDB which with name == 1
+    update 0 from users in myDB for name append "a"
+end
