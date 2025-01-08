@@ -27,6 +27,7 @@ def main(path_to_file_with_code: str, *args: any, **kwargs: any) -> None:
                     attribuits_of_conn: list[str] = [i[i.index('"') + 1: i.rindex('"')] for i in instruction.second_operand.content.split(" ; ")]
                     db_name: str = [__temporary_names__[key].first_operand.content for key in __temporary_names__ if "[db]" in key][0]
                     python_code += F"_{id(instruction)} = stdlib.RigConn('{instruction.result.content}', '_{id(instruction)}', '{db_name}', '{attribuits_of_conn[0]}', '{attribuits_of_conn[1]}', '{attribuits_of_conn[2]}')\n"
+                    python_code += F"stdlib.rig_register_for_connections(_{id(instruction)})\n"
                 elif ":table" in instruction.operation.content:
                     
                     __temporary_names__[F"[tab]{id(instruction)}"] = instruction
@@ -34,6 +35,7 @@ def main(path_to_file_with_code: str, *args: any, **kwargs: any) -> None:
                     db_name: str = [__temporary_names__[key].first_operand.content for key in __temporary_names__ if "[db]" in key][0]
                     attrs_string: str = str(list(attr for attr in attribuits_of_table)).replace("'", " ").replace("[", " ").replace("]", " ")
                     python_code += F"_{id(instruction)} = stdlib.RigTable('{instruction.result.content}', '_{id(instruction)}', '{db_name}', {attrs_string})\n"
+                    python_code += F"stdlib.rig_register_for_tables(_{id(instruction)})\n"
                 else:
                     
                     __temporary_names__[F"[db]{id(instruction)}"] = instruction
@@ -54,7 +56,7 @@ def main(path_to_file_with_code: str, *args: any, **kwargs: any) -> None:
                 else:
                     
                     __temporary_names__[F"[response]{id(instruction)}"] = instruction
-                    python_code += F"_{id(instruction.result.content)} = stdlib.Response()"
+                    python_code += F"_{id(instruction.result.content)} = stdlib.Response('post', {instruction.first_operand.content}, {instruction.result.content})\n"
             case instruction.operation if "update" in instruction.operation.content:
 
                 pass
