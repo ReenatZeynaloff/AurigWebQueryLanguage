@@ -5,14 +5,30 @@ from stdlib import *
 __temporary_names__: dict[str: analysis.RigInstruction] = {}
 
 
+def rig_clear_function(the_string: str) -> str:
+    """Special function for removing another symbols from object of string data."""
+
+    res: str = ""
+
+    for char in the_string:
+
+        if char.isalnum():
+
+            res += char
+    else:
+
+        return res
+
+
 def main(path_to_file_with_code: str, *args: any, **kwargs: any) -> None:
     """
-    Enter point.
+    The enter point of early Aurig interpreter.
     """
 
     f: list[analysis.RigToken] = analysis.rig_tokenization_proccess(path_to_file_with_code)
     f1: list[analysis.RigToken] = analysis.RigFormalGrammatic(f).rig_text_analys()
     f2: list[analysis.RigInstruction] = analysis.RigSemanticBuilder(f1, False).rig_markup_hub()
+
     python_code: str = """import stdlib\n\n"""
     
     for index, instruction in enumerate(f2):
@@ -22,7 +38,7 @@ def main(path_to_file_with_code: str, *args: any, **kwargs: any) -> None:
             case instruction.operation if "create" in instruction.operation.content:
 
                 if ":connection" in instruction.operation.content:
-
+                    
                     __temporary_names__[F"[conn]{id(instruction)}"] = instruction
                     attribuits_of_conn: list[str] = [i[i.index('"') + 1: i.rindex('"')] for i in instruction.second_operand.content.split(" ; ")]
                     db_name: str = [__temporary_names__[key].first_operand.content for key in __temporary_names__ if "[db]" in key][0]
@@ -56,10 +72,28 @@ def main(path_to_file_with_code: str, *args: any, **kwargs: any) -> None:
                 else:
                     
                     __temporary_names__[F"[response]{id(instruction)}"] = instruction
-                    python_code += F"_{id(instruction.result.content)} = stdlib.Response('post', {instruction.first_operand.content}, {instruction.result.content})\n"
+                    selected_keys: list[str] = [
+                        rig_clear_function(i) for index, i in enumerate([i for index, i in enumerate(instruction.first_operand.content.split()) if index % 2 == 0]) if index % 2 == 0
+                        ]
+                    selected_values: list[str] = [
+                        rig_clear_function(i) for index, i in enumerate([i for index, i in enumerate(instruction.first_operand.content.split()) if index % 2 == 0]) if index % 2 != 0
+                        ]
+                    request_type_and_form_id: dict[str: str] = {key: value for key, value in zip(selected_keys, selected_values)}
+                    python_code += F"_{id(instruction.result.content)} = stdlib.Response('{request_type_and_form_id['request']}', '{request_type_and_form_id['formid']}', {instruction.result.content})\n"
+                    # python_code += F"_{id(instruction.result)} = rig_tables_objects_builder()"
+                    # print(python_code)
+                    # print([i for i in {key: __temporary_names__[key] for key in __temporary_names__}])
             case instruction.operation if "update" in instruction.operation.content:
 
-                pass
+                if ":append" in instruction.operation.content:
+
+                    print(instruction.second_operand.content)
+                elif ":set" in instruction.operation.content:
+
+                    pass
+                elif ":remove" in instruction.operation.content:
+
+                    pass
             case instruction.operation if "delete" in instruction.operation.content:
 
                 pass
@@ -71,7 +105,8 @@ def main(path_to_file_with_code: str, *args: any, **kwargs: any) -> None:
                 pass
     else:
 
-        print(python_code)
+        # print(python_code)
+        pass
 
 
 if __name__ == "__main__":

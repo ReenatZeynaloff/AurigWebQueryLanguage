@@ -11,9 +11,9 @@ create in myDB connection myConn ( \
     port = "8000" \
 )
 
-
-read request == "post" with formid == 1 in myConn as newResources
-
+/#/ Alex, I have done it.
+/#/ For now, we can to write in here comments without some
+/#/ badly consequences.
 
 create in myDB table users ( \
     name = string \
@@ -23,11 +23,15 @@ create in myDB table users ( \
 )
 
 
+read request == "post" with formid == 1 in myConn as newResources
+
+
 if a > 5 and b == 2 :
     insert in users response ( newResources )
 end
 
+
 if not a :
-    delete (1<=>2) from users in myDB which with name == 1
+    delete (1<=>2) from users in myDB which with name == "Yana" and age == 16
     update 0 from users in myDB for name append "a"
 end

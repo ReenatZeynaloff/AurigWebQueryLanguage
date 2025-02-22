@@ -346,7 +346,7 @@ class RigConn(object):
 
     @classmethod
     def __inc_counting_of_selves(cls) -> None | bool:
-        """Special private class-metho for increment."""
+        """Special private class-method for increment."""
 
         if cls.__count_of_objects == 1:
 

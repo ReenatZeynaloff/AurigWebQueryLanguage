@@ -74,8 +74,21 @@ def rig_string_clean(the_string: str) -> str:
         return the_string
 
 
-def rig_typing(the_string: str) -> str:
+def rig_typing(the_string: str, the_row_for_context: list[str]) -> str:
     """Function for definition type of code bit as 'string'."""
+
+    has_row_the_comment: bool = False
+
+    for elem in the_row_for_context.split():
+
+        if elem == "/#/":
+
+            has_row_the_comment = True
+    else:
+
+        if has_row_the_comment:
+
+            return ""
 
     if the_string[0] in ["'", '"'] and the_string[-1] in ["'", '"']:
 
@@ -97,18 +110,41 @@ def rig_typing(the_string: str) -> str:
         return "opname"
     elif the_string in symbols:
 
-        if the_string == "(":
+        match the_string:
 
-            return "begin_brace"
-        if the_string == ")":
+            case "(":
+                
+                return "begin_brace"
+            case ")":
 
-            return "end_brace"
-        if the_string == "=":
+                return "end_brace"
+            case "=":
 
-            return "asignation"
-        if the_string == ";":
+                return "asignation"
+            case ";":
 
-            return "dotcomma"
+                return "dotcomma"
+            case "<":
+                
+                return "larger"
+            case ">":
+
+                return "less"
+            case "==":
+
+                return "equals"
+            case "!=":
+
+                return "not_equals"
+            case "<=":
+
+                return "larger_or_equals"
+            case ">=":
+
+                return "less_or_equals"
+            case "*":
+
+                return "all_elements"
     elif the_string in special_words:
 
         return "special_word"
@@ -120,6 +156,9 @@ def rig_typing(the_string: str) -> str:
         if the_string != "\u005c":
             
             return "identifier"
+        else:
+
+            return "slash"
 
 
 def rig_tokenization_proccess(path_to_subject: str) -> list[RigToken]:
@@ -142,15 +181,19 @@ def rig_tokenization_proccess(path_to_subject: str) -> list[RigToken]:
 
         print("Why chosen your path to file isn't being correct?")
         return []
+
     for index_of_row, row in enumerate(subject.split("\n")):
 
         for index_of_subj, subj in enumerate(row.split()):
-            
-            elem: RigToken = RigToken(subj, rig_typing(rig_string_clean(subj)), index_of_subj, index_of_row + 1)
-            res.append(elem)
+
+            elem: RigToken = RigToken(subj, rig_typing(rig_string_clean(subj), row), index_of_subj, index_of_row + 1)
+                
+            if rig_typing(subj, row):
+
+                res.append(elem)
         else:
             
-            if len(row.split()) > 3 and row.split()[-1] != "\u005c":
+            if len(row.split()) > 2 and row.split()[-1] != "\u005c":
 
                 res.append(RigToken(R"\n", "nexting", index_of_subj, index_of_row + 1))
     else:
@@ -223,10 +266,10 @@ class RigFormalGrammatic(object):
             case some_row if some_row[1].content_type != "identifier" and some_row[1].content not in ["request", "*"]:
 
                 print(F"What is doing '{some_row[1].content}' at here '{some_row_content}'?")
-            case some_row if some_row[1].content == "*" and some_row[2].content != "in":
+            case some_row if some_row[1].content_type == "all_elements" and some_row[2].content != "in":
 
                 print(F"Where your 'in'-pretext in '{some_row_content}'?")
-            case some_row if some_row[1].content == "*" and some_row[3].content_type != "identifier":
+            case some_row if some_row[1].content_type == "all_elements" and some_row[3].content_type != "identifier":
 
                 print(F"Why at fourth index in '{some_row_content}' is absent a ident. name?")
                 print(F"Remove this '{some_row[3].content_type}'-type value and will replace to exist callable name.")
@@ -367,7 +410,7 @@ class RigFormalGrammatic(object):
                     
                     if len(row) > 0 and (rows.index(some_row) < index < end_brace_index):
 
-                        if row != some_row and row[-1].content == "\u005c" and row[-2].content_type != "begin_brace":
+                        if row != some_row and row[-2].content_type != "begin_brace":
 
                             indexs_sets.add(index)
                 else:
@@ -381,13 +424,12 @@ class RigFormalGrammatic(object):
 
                             body_rows.append(row)
                     else:
-                        
+
                         create_object: create_type = create_type(some_row, body_rows)
 
                         for body_row in create_object.body_rows:
 
                             body_row_content: str = ' '.join(tuple(i.content for i in body_row))
-
                             match body_row:
 
                                 case body_row if len(body_row) != 4:
@@ -418,7 +460,7 @@ class RigFormalGrammatic(object):
 
                                     res = True
                                     self.__temp_for_create_statement.extend(body_row)
-            case some_row if len(some_row) not in [4, 7]:
+            case some_row if len(some_row) not in [4, 6]:
 
                 print(F"Your sentence's lenght in: '{some_row_content}', isn't a satisfactory value!")
             case _:
@@ -810,7 +852,7 @@ class RigSemanticBuilder(object):
         detected_result: RigToken = None
 
         if len(rows_material) != 4:
-
+            
             detected_root_operation = RigToken(
                 F"create:{rows_material[3].content}", "create", None, rows_material[0].row_index
             )
@@ -826,9 +868,9 @@ class RigSemanticBuilder(object):
 
                     after_end_index = index + current_index + 1
                     break
+
             body_rows_array: list[str] = [j.content for i in matrix[current_index + 1: after_end_index] for j in i]
             body_rows_string: str = ';'.join(' '.join(body_rows_array).split('\u005c'))
-
             detected_second_operand = RigToken(
                 body_rows_string, 
                 "table_body", None, None
@@ -997,7 +1039,13 @@ class RigSemanticBuilder(object):
 
 if __name__ == "__main__":
 
+    tokens: list[RigToken] = rig_tokenization_proccess("field.aurig")
+
+    # [token.content for token in RigFormalGrammatic(tokens).rig_text_analys()]
+    
     grammatic_obj: RigFormalGrammatic = RigFormalGrammatic(rig_tokenization_proccess("field.aurig"))
-    sema_obj: RigSemanticBuilder = RigSemanticBuilder(grammatic_obj.rig_text_analys())
-    sema_obj.rig_markup_hub()
+    sema_obj: RigSemanticBuilder = RigSemanticBuilder(grammatic_obj.rig_text_analys(), False)
+    instructs_list: list[RigInstruction] = sema_obj.rig_markup_hub()
+
+    # [print(i) for i in instructs_list]
 
