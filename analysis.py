@@ -1,9 +1,6 @@
-import datetime
 from dataclasses import dataclass
-from os import read
 from pprint import pprint
 from string import ascii_letters, digits
-import re
 
 
 symbols: list[str] = [

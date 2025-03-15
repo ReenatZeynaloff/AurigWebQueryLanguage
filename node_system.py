@@ -1,9 +1,14 @@
+"""
+Data, when this module was formed: 29.01.2025 .
+"""
+
 from abc import abstractmethod, ABC
 from pprint import pprint
 from analysis import RigFormalGrammatic, RigToken, rig_tokenization_proccess
 
-
 NODE: type = "MotherNode"
+_TREE: type = dict[NODE: list[NODE]]
+__trees__: list[_TREE] = []
 
 
 class MotherNode(ABC):
@@ -17,7 +22,8 @@ class MotherNode(ABC):
     is_root_node: bool = None
     __char_id_for_letter: int = 64
 
-    def __init__(self, name: str, token_obj_content: "RigToken", right_node: "MotherNode", central_node: "MotherNode", left_node: "MotherNode", is_root_node: bool) -> None:
+    def __init__(self, name: str, token_obj_content: "RigToken", 
+    right_node: "MotherNode" = None, central_node: "MotherNode" = None, left_node: "MotherNode" = None, is_root_node: bool = False) -> None:
         """..."""
 
         self.name = name
@@ -36,19 +42,19 @@ class MotherNode(ABC):
         pass
     
     @abstractmethod
-    def goto_right(self) -> any:
+    def goto_right(self) -> "MotherNode":
         """..."""
 
         pass
 
     @abstractmethod
-    def goto_center(self) -> any:
+    def goto_center(self) -> "MotherNode":
         """..."""
 
         pass
 
     @abstractmethod
-    def goto_left(self) -> any:
+    def goto_left(self) -> "MotherNode":
         """..."""
 
         pass
@@ -57,7 +63,10 @@ class MotherNode(ABC):
 class CreateNode(MotherNode):
     """..."""
 
-    def __init__(self, name: str, token_obj_content: "RigToken", right_node: "MotherNode", central_node: "MotherNode", left_node: "MotherNode", is_root_node: bool) -> None:
+    is_root_node: bool = None
+
+    def __init__(self, name: str, token_obj_content: "RigToken", 
+    right_node: "MotherNode" = None, central_node: "MotherNode" = None, left_node: "MotherNode" = None, is_root_node: bool = False) -> None:
         """..."""
         
         super().__init__(name, token_obj_content, right_node, central_node, left_node, is_root_node)
@@ -67,17 +76,17 @@ class CreateNode(MotherNode):
 
         pass
     
-    def goto_right(self) -> any:
+    def goto_right(self) -> MotherNode:
         """..."""
 
         pass
 
-    def goto_center(self) -> any:
+    def goto_center(self) -> MotherNode:
         """..."""
 
         pass
 
-    def goto_left(self) -> any:
+    def goto_left(self) -> MotherNode:
         """..."""
 
         pass
@@ -86,7 +95,8 @@ class CreateNode(MotherNode):
 class ReadNode(MotherNode):
     """..."""
 
-    def __init__(self, name: str, token_obj_content: "RigToken", right_node: "MotherNode", central_node: "MotherNode", left_node: "MotherNode", is_root_node: bool) -> None:
+    def __init__(self, name: str, token_obj_content: "RigToken", 
+    right_node: "MotherNode" = None, central_node: "MotherNode" = None, left_node: "MotherNode" = None, is_root_node: bool = False) -> None:
         """..."""
         
         super().__init__(name, token_obj_content, right_node, central_node, left_node, is_root_node)
@@ -115,7 +125,8 @@ class ReadNode(MotherNode):
 class UpdateNode(MotherNode):
     """..."""
 
-    def __init__(self, name: str, token_obj_content: "RigToken", right_node: "MotherNode", central_node: "MotherNode", left_node: "MotherNode", is_root_node: bool) -> None:
+    def __init__(self, name: str, token_obj_content: "RigToken", 
+    right_node: "MotherNode" = None, central_node: "MotherNode" = None, left_node: "MotherNode" = None, is_root_node: bool = False) -> None:
         """..."""
         
         super().__init__(name, token_obj_content, right_node, central_node, left_node, is_root_node)
@@ -144,7 +155,8 @@ class UpdateNode(MotherNode):
 class DeleteNode(MotherNode):
     """..."""
 
-    def __init__(self, name: str, token_obj_content: "RigToken", right_node: "MotherNode", central_node: "MotherNode", left_node: "MotherNode", is_root_node: bool) -> None:
+    def __init__(self, name: str, token_obj_content: "RigToken", 
+    right_node: "MotherNode" = None, central_node: "MotherNode" = None, left_node: "MotherNode" = None, is_root_node: bool = False) -> None:
         """..."""
         
         super().__init__(name, token_obj_content, right_node, central_node, left_node, is_root_node)
@@ -173,7 +185,8 @@ class DeleteNode(MotherNode):
 class InsertNode(MotherNode):
     """..."""
 
-    def __init__(self, name: str, token_obj_content: "RigToken", right_node: "MotherNode", central_node: "MotherNode", left_node: "MotherNode", is_root_node: bool) -> None:
+    def __init__(self, name: str, token_obj_content: "RigToken", 
+    right_node: "MotherNode" = None, central_node: "MotherNode" = None, left_node: "MotherNode" = None, is_root_node: bool = False) -> None:
         """..."""
         
         super().__init__(name, token_obj_content, right_node, central_node, left_node, is_root_node)
@@ -202,7 +215,8 @@ class InsertNode(MotherNode):
 class ConditionNode(MotherNode):
     """..."""
 
-    def __init__(self, name: str, token_obj_content: "RigToken", right_node: "MotherNode", central_node: "MotherNode", left_node: "MotherNode", is_root_node: bool) -> None:
+    def __init__(self, name: str, token_obj_content: "RigToken", 
+    right_node: "MotherNode" = None, central_node: "MotherNode" = None, left_node: "MotherNode" = None, is_root_node: bool = False) -> None:
         """..."""
         
         super().__init__(name, token_obj_content, right_node, central_node, left_node, is_root_node)
@@ -228,7 +242,7 @@ class ConditionNode(MotherNode):
         pass
 
 
-__annotations_of_nodes_classes__: dict[str: list[type, str]] = {
+__annotations_of_nodes_classes__: (ANNOTTYPE:=dict[str, list[type, str]]) = {
     "CreateNode": [CreateNode, "create"],
     "ReadNode": [ReadNode, "read"],
     "UpdateNode": [UpdateNode, "update"],
@@ -238,27 +252,96 @@ __annotations_of_nodes_classes__: dict[str: list[type, str]] = {
 }
 
 
-def instructors_hub(tokens_expresion: list[list[RigToken]]) -> None:
+def create_tree_builder(creates_expression: list[RigToken], create_body: list[list[RigToken]], rows_matrix: list[list[RigToken]]) -> bool:
     """..."""
 
-    if len(tokens_expresion) > 1:
+    result: bool = False
+    general_creates_rows: list[list[RigToken]] = create_body + creates_expression
 
-        for row in tokens_expresion:
+    if len(create_body) > 1:
 
-            for token in row:
-
-                pass
-
+        # print(create_body)
+        pass
     else:
 
-        tokens_expresion = tokens_expresion[0]
-
-        for token in tokens_expresion:
+        if len(creates_expression) == 2:
 
             pass
+        else:
+
+            root_node: CreateNode = CreateNode("init", creates_expression[0], 
+            right_node=CreateNode("obj:name", creates_expression[1]), left_node=CreateNode("alias", creates_expression[2], CreateNode("obj:alias", creates_expression[3])), 
+            is_root_node=True)
+
+            # __trees__[root_node] = [i for i in ]
+
+            root_node.get_all_child_nodes()
+
+    return result
 
 
-def nodizer(token_flow: list[RigToken]) -> object:
+def get_create_bodys_rows(creates_expression: list[RigToken], rows_matrix: list[list[RigToken]]) -> dict[bool, list[list[RigToken]]]:
+    """Special function, which return the dictionary with key about having of body and value of self body."""
+
+    sub_result: list[list[RigToken]] = []
+    index_of_current_expression: int = rows_matrix.index(creates_expression)
+    it_has_body: bool = False
+    rows_with_body: list[list[RigToken]] = []
+    creators_counter: dict[int, str] = {}
+    existing_of_withoutbodylike_creates: bool = False
+    result: dict[bool, list[list[RigToken]]] = {}
+
+    for row in rows_matrix[index_of_current_expression:]:
+        
+        if row[0].content == __annotations_of_nodes_classes__["CreateNode"][1]:
+
+            creators_counter[row[0].row_index] = " ".join([i.content for i in row])
+
+            if row[-2].content_type == "begin_brace":
+
+                it_has_body = True
+            else:
+                
+                it_has_body = False
+                existing_of_withoutbodylike_creates = True
+
+            if it_has_body:
+
+                rows_with_body.append(row)
+                
+                for key in list(creators_counter.keys()):
+
+                    if "(" not in creators_counter[key]:
+
+                        creators_counter.pop(key)
+                else:
+                    
+                    if len(creators_counter) == 1:
+
+                        if not existing_of_withoutbodylike_creates:
+
+                            for index, current_row in enumerate(rows_matrix[index_of_current_expression + 1:]):
+
+                                future_row: list[RigToken] = rows_matrix[index_of_current_expression + 1:][index + 1]
+
+                                sub_result.append(current_row)
+
+                                if future_row[-1].content_type != "slash" or future_row[0].content == __annotations_of_nodes_classes__["CreateNode"][-1]:
+
+                                    break
+    else:
+
+        if not existing_of_withoutbodylike_creates:
+
+            result = {it_has_body: sub_result}
+        else:
+
+            result = {not it_has_body: sub_result}
+
+        return result
+
+
+def nodizer(token_flow: list[RigToken]) -> None:
     """The large function ..."""
 
     result: list[dict[NODE: list[NODE]]] = []
@@ -314,7 +397,7 @@ def nodizer(token_flow: list[RigToken]) -> object:
             def __repr__(self) -> str:
                 """..."""
 
-                res: str = ""
+                result: str = ""
 
                 return super().__repr__()
 
@@ -323,7 +406,7 @@ def nodizer(token_flow: list[RigToken]) -> object:
             cluster_content: str = " ".join([i.content for i in cluster.row_of_tokens])
 
             for name_of_node_class in __annotations_of_nodes_classes__:
-                
+
                 its_ok: bool = False
                 current_cluster_is_root: bool = False
                 get_center_for_current_cluster: NodizedCluster = None
@@ -332,8 +415,9 @@ def nodizer(token_flow: list[RigToken]) -> object:
 
                 if ((cluster_content.split()[0] == __annotations_of_nodes_classes__[name_of_node_class][-1]) and \
                 (name_of_node_class == list(__annotations_of_nodes_classes__.keys())[0])):
-
-                    pass
+                    
+                    creates_dict: dict[bool: list[list[RigToken]]] = get_create_bodys_rows(cluster.row_of_tokens, really_rows)
+                    its_ok = create_tree_builder(cluster.row_of_tokens, creates_dict[list(creates_dict.keys())[-1]], really_rows)
                 elif ((cluster_content.split()[0] == __annotations_of_nodes_classes__[name_of_node_class][-1]) and \
                 (name_of_node_class == list(__annotations_of_nodes_classes__.keys())[1])):
 
@@ -354,7 +438,7 @@ def nodizer(token_flow: list[RigToken]) -> object:
                 (name_of_node_class == list(__annotations_of_nodes_classes__.keys())[5])):
 
                     pass
-                    
+
                 if its_ok:
 
                     __annotations_of_nodes_classes__[name_of_node_class][0](

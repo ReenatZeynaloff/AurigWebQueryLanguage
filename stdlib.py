@@ -6,9 +6,9 @@ import socket
 from typing import Sequence
 
 
-__locals__: dict[str: list] = {}
-__tables__: dict[str: list] = {}
-__dynamic_tabless_objects__: dict[str: list] = {}
+__locals__: dict[str, list] = {}
+__tables__: dict[str, list] = {}
+__dynamic_tabless_objects__: dict[str, list] = {}
 integer: str = "integer"
 float_point: str = "float_point"
 string: str = "string"
@@ -88,7 +88,7 @@ class RigTable(object):
     fields: dict[str: str] = {}
     count_of_amount_of_responses_objects: int = -1
 
-    def __init__(self, table_name: str, var_name: str, db_name: str, **kwargs: dict[str: str]) -> None:
+    def __init__(self, table_name: str, var_name: str, db_name: str, **kwargs: dict[str, str]) -> None:
         """Initializator-method."""
 
         self.table_name = table_name
@@ -212,7 +212,7 @@ class RigTable(object):
             get_finding_objects: list[any] = [i for j in diapasone_for_j_iterator for i in __dynamic_tabless_objects__[get_our_table] if i.number == j]
             attributes_content_for_delete: str = [list(i.__annotations__.values()) for i in get_finding_objects]
             coincedences_amount: int = 0
-            coincedences_objects: dict[any: int] = {}
+            coincedences_objects: dict[any, int] = {}
             all_max_coinceded_objects: list[any] = []
       
             for index, i in enumerate(attributes_content_for_delete):
@@ -350,7 +350,7 @@ class RigConn(object):
 
         if cls.__count_of_objects == 1:
 
-            raise ConnectionError("Too many connection objects were created!")
+            raise ConnectionError("Too many connection objects was created!")
         else:
             
             cls.__count_of_objects += 1
