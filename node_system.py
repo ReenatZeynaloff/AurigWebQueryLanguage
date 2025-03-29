@@ -7,7 +7,7 @@ from pprint import pprint
 from analysis import RigFormalGrammatic, RigToken, rig_tokenization_proccess
 
 NODE: type = "MotherNode"
-_TREE: type = dict[NODE: list[NODE]]
+_TREE: type = dict[NODE, list[NODE]]
 __trees__: list[_TREE] = []
 
 
@@ -74,7 +74,9 @@ class CreateNode(MotherNode):
     def __repr__(self) -> str:
         """..."""
 
-        pass
+        result: str = ""
+
+        return result
     
     def goto_right(self) -> MotherNode:
         """..."""
@@ -104,7 +106,9 @@ class ReadNode(MotherNode):
     def __repr__(self) -> str:
         """..."""
 
-        pass
+        result: str = ""
+
+        return result
     
     def goto_right(self) -> any:
         """..."""
@@ -134,7 +138,9 @@ class UpdateNode(MotherNode):
     def __repr__(self) -> str:
         """..."""
 
-        pass
+        result: str = ""
+
+        return result
     
     def goto_right(self) -> any:
         """..."""
@@ -164,7 +170,9 @@ class DeleteNode(MotherNode):
     def __repr__(self) -> str:
         """..."""
 
-        pass
+        result: str = ""
+
+        return result
     
     def goto_right(self) -> any:
         """..."""
@@ -194,7 +202,9 @@ class InsertNode(MotherNode):
     def __repr__(self) -> str:
         """..."""
 
-        pass
+        result: str = ""
+
+        return result
     
     def goto_right(self) -> any:
         """..."""
@@ -224,7 +234,9 @@ class ConditionNode(MotherNode):
     def __repr__(self) -> str:
         """..."""
 
-        pass
+        result: str = ""
+
+        return result
     
     def goto_right(self) -> any:
         """..."""
@@ -260,22 +272,24 @@ def create_tree_builder(creates_expression: list[RigToken], create_body: list[li
 
     if len(create_body) > 1:
 
-        # print(create_body)
-        pass
+        root_node: CreateNode = CreateNode("init", creates_expression[0], 
+        right_node=CreateNode("place", creates_expression[1], right_node=CreateNode("obj:name", creates_expression[2])), 
+        left_node=CreateNode("type", creates_expression[3], right_node=CreateNode("obj:name", creates_expression[4])),
+        central_node=CreateNode(""))
     else:
+
+        __trees__.append({})
 
         if len(creates_expression) == 2:
 
-            pass
+            root_node: CreateNode = CreateNode("init", creates_expression[0], right_node=CreateNode("obj:name", creates_expression[1]), is_root_node=True)
+            __trees__[-1][root_node] = [root_node.right_node, root_node.left_node, root_node.left_node.right_node]
         else:
 
             root_node: CreateNode = CreateNode("init", creates_expression[0], 
             right_node=CreateNode("obj:name", creates_expression[1]), left_node=CreateNode("alias", creates_expression[2], CreateNode("obj:alias", creates_expression[3])), 
             is_root_node=True)
-
-            # __trees__[root_node] = [i for i in ]
-
-            root_node.get_all_child_nodes()
+            __trees__[-1][root_node] = [root_node.right_node, root_node.left_node, root_node.left_node.right_node]
 
     return result
 
